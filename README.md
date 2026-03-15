@@ -10,8 +10,9 @@ You can [compare the full code diff here](https://github.com/xunoaib/wwdead_tact
 
 ## Key Improvements (v2.0.0-xun.1)
 
-- Fix issue where hovered suburb location text would reset itself.
+- Show GPS coordinates for other map locations on hover.
 - Added local storage support to remember the collapsed/expanded state of the map.
+- Fix issue where hovered suburb location text would reset itself.
 - Implemented "hidden" state until initialization is complete to prevent layout popping/flicker.
-- Simplify `@match` rules to target the main "map" URL specifically.
-- Ran `npx prettitier` to improve readiability of source code.
+- Simplify `@match` rules to specifically target the main "map" URL.
+- Ran `npx prettier` to improve readiability of source code.
