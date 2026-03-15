@@ -8,8 +8,12 @@
 // @grant       GM.getValue
 // @license      GNU General Public License v2 or later; http://www.gnu.org/licenses/gpl.txt
 
-// @downloadURL https://update.greasyfork.org/scripts/567867/WWDead%20Tactical%20Map%20v20.user.js
-// @updateURL https://update.greasyfork.org/scripts/567867/WWDead%20Tactical%20Map%20v20.meta.js
+// @note    This is my (xunoaib's) personal fork of DTTL's tactical map plugin with minor fixes added.
+// @note    I don't control nor manage the script at the following GreasyFork URLs.
+
+// // Disabled here to avoid conflicts.
+// // @downloadURL https://update.greasyfork.org/scripts/567867/WWDead%20Tactical%20Map%20v20.user.js
+// // @updateURL https://update.greasyfork.org/scripts/567867/WWDead%20Tactical%20Map%20v20.meta.js
 // ==/UserScript==
 
 /**
