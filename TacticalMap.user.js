@@ -13673,9 +13673,15 @@ cursor:pointer;
           if (entry && pageText.includes(entry[1])) {
             const td = suburbCells[y][x];
 
-            td.style.border = "2px solid #000";
-            td.style.boxShadow =
-              "0 0 10px 3px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.5)";
+            td.textContent = "●";
+            td.style.color = "#FFFFFF";
+            td.style.textAlign = "center";
+            td.style.lineHeight = "22px";
+            td.style.fontSize = "14px";
+
+            td.style.cursor = "default";
+            td.style.userSelect = "none";
+            td.style.webkitUserSelect = "none";
 
             playerGPS = `(${gx}, ${gy})`;
             suburbMap.label.dataset.playerGPS = playerGPS;
