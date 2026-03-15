@@ -13543,7 +13543,8 @@ cursor:pointer;
 
       td.addEventListener("mouseenter", () => {
         if (td.dataset.name) {
-          suburbMap.label.textContent = td.dataset.name;
+          const isPlayer = td.dataset.gps === playerGPS;
+          suburbMap.label.textContent = isPlayer ? td.dataset.name + " (You)" : td.dataset.name;
           suburbMap.coords.textContent = "GPS: " + td.dataset.gps;
         }
       });
