@@ -13394,6 +13394,8 @@
   B[33][44] = [34, "City Zoo", "City_Zoo"];
   B[33][45] = [34, "City Zoo", "City_Zoo"];
 
+  let playerGPS = "undefined";
+
   // ------------------------------------------------
   // CREATE MAP WINDOW (Collapsible)
   // ------------------------------------------------
@@ -13549,10 +13551,11 @@ cursor:pointer;
   suburbMap.wrap.addEventListener("mouseleave", () => {
     if (currentViewSuburb === playerSuburb) {
       suburbMap.label.textContent = playerSuburb + " (You)";
+      suburbMap.coords.textContent = "GPS: " + playerGPS;
     } else {
       suburbMap.label.textContent = currentViewSuburb;
+      suburbMap.coords.textContent = "\u00A0";
     }
-    suburbMap.coords.textContent = "GPS: " + playerGPS;
   });
 
   // ------------------------------------------------
@@ -13563,7 +13566,7 @@ cursor:pointer;
     const suburbName = suburbNames[sy][sx];
     currentViewSuburb = suburbName;
 
-    suburbMap.coords.textContent = "";
+    suburbMap.coords.textContent = "\u00A0";
 
     if (suburbName === playerSuburb) {
       suburbMap.label.textContent = suburbName + " (You)";
@@ -13673,7 +13676,7 @@ cursor:pointer;
               td.style.boxShadow =
                 "0 0 10px 3px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.5)";
 
-              const playerGPS = `(${gx}, ${gy})`;
+              playerGPS = `(${gx}, ${gy})`;
               suburbMap.label.dataset.playerGPS = playerGPS;
               suburbMap.coords.textContent = "GPS: " + playerGPS;
 
