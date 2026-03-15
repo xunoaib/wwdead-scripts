@@ -18,6 +18,7 @@ You may have to click the `Files changed` tab to see the actual content.
 - Show GPS coordinates for other suburb tiles on mouseover.
 - Use local storage to remember the collapsed/expanded state of the map.
 - Add white dot to indicate the player's current location.
+- Add an outline to indicate the currently-selected suburb in the city map.
 
 **Fixes:**
 - Use a fixed cell size to prevent grid from shifting.

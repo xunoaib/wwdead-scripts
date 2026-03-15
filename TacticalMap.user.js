@@ -13571,6 +13571,25 @@ cursor:pointer;
     currentViewSuburb = suburbName;
     suburbMap.coords.textContent = "\u00A0";
 
+    // highlight the selected cell
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        const cell = cityCells[y][x];
+        if (y === sy && x === sx) {
+          cell.style.outline = "2px dashed #FFFFFF";
+          cell.style.outlineOffset = "-1px";
+          cell.style.zIndex = "20";
+          cell.style.position = "relative";
+          cell.style.boxShadow = "0 0 5px rgba(0,0,0,0.8)";
+        } else {
+          cell.style.position = "static";
+          cell.style.zIndex = "1";
+          cell.style.outline = "none";
+          cell.style.boxShadow = "none";
+        }
+      }
+    }
+
     suburbMap.label.textContent = (suburbName === playerSuburb) ? suburbName + " (You)" : suburbName;
 
     for (let y = 0; y < 10; y++) {
@@ -13741,9 +13760,13 @@ cursor:pointer;
 
     for (let y = 3; y <= 6; y++) {
       for (let x = 3; x <= 6; x++) {
-        if (cityCells[y][x].style.border === "2px solid rgb(0, 0, 0)") continue;
+        const cell = cityCells[y][x];
 
-        cityCells[y][x].style.boxShadow =
+        if (cell.style.border === "2px solid rgb(0, 0, 0)") continue;
+
+        if (cell.dataset.selected === "true") continue;
+
+        cell.style.boxShadow =
           `0 0 ${6 + pulse * 10}px ${2 + pulse * 5}px rgba(161,196,244,${0.5 + pulse * 0.5})`;
       }
     }
