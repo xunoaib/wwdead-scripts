@@ -1,6 +1,6 @@
 # Tactical Map - WWDead Plugin
 
-A personal fork of **DTTL**'s [Tactical Map Greasemonkey Plugin](https://greasyfork.org/en/scripts/567867-wwdead-tactical-map-v2-0) for [WWDead.com](https://www.wwdead.com) with some minor fixes.
+A personal fork of **DTTL**'s [Tactical Map Greasemonkey Plugin](https://greasyfork.org/en/scripts/567867-wwdead-tactical-map-v2-0) for [WWDead.com](https://wwdead.com) with some minor fixes.
 
 ## [⚡ Install Tactical Map (v2.0.0-xun.1)](https://github.com/xunoaib/wwdead_tacticalmap/raw/refs/heads/main/TacticalMap.user.js)
 
