@@ -17,4 +17,4 @@ You may have to click the `Files changed` tab to see the actual content.
 - Fix issue where hovered suburb location text would reset itself.
 - Implemented "hidden" state until initialization is complete to prevent layout popping/flicker.
 - Simplify `@match` rules to specifically target the main "map" URL.
-- Ran `npx prettier` to improve readiability of source code.
+- Ran `npx prettier` to improve readability of source code.
