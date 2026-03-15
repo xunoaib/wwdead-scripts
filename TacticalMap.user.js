@@ -13570,9 +13570,6 @@ cursor:pointer;
 
     suburbMap.coords.textContent = "";
 
-    // WARN: Calling this will reset any mouseenter suburb location text.
-    // We should ensure/assume its set somewhere else (or make a more robust fix here).
-
     if (suburbName === playerSuburb) {
       suburbMap.label.textContent = suburbName + " (You)";
     } else {
