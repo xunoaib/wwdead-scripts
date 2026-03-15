@@ -13569,44 +13569,35 @@ cursor:pointer;
   function drawSuburbMap(sx, sy) {
     const suburbName = suburbNames[sy][sx];
     currentViewSuburb = suburbName;
-
     suburbMap.coords.textContent = "\u00A0";
 
-    if (suburbName === playerSuburb) {
-      suburbMap.label.textContent = suburbName + " (You)";
-    } else {
-      suburbMap.label.textContent = suburbName;
-    }
+    suburbMap.label.textContent = (suburbName === playerSuburb) ? suburbName + " (You)" : suburbName;
 
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
         const gx = sx * 10 + x;
         const gy = sy * 10 + y;
-
         const td = suburbCells[y][x];
 
+        td.textContent = "";
         td.style.background = "#071A07";
-        td.style.boxShadow = "";
         td.style.border = "1px solid #000000";
-        td.style.boxSizing = "border-box";
         td.dataset.name = "";
         td.dataset.gps = `(${gx}, ${gy})`;
 
         const entry = B[gy]?.[gx];
-
         if (entry) {
           const type = BUILDING_TYPES[entry[0]];
-
           if (type && type.visible) {
             td.style.background = type.color;
-
             if (type.border) td.style.border = type.border;
           }
-
           td.dataset.name = entry[1];
         }
       }
     }
+
+    drawPlayerDot();
   }
 
   // ------------------------------------------------
@@ -13671,24 +13662,55 @@ cursor:pointer;
           const entry = B[gy]?.[gx];
 
           if (entry && pageText.includes(entry[1])) {
-            const td = suburbCells[y][x];
-
-            td.textContent = "●";
-            td.style.color = "#FFFFFF";
-            td.style.textAlign = "center";
-            td.style.lineHeight = "22px";
-            td.style.fontSize = "14px";
-
-            td.style.cursor = "default";
-            td.style.userSelect = "none";
-            td.style.webkitUserSelect = "none";
-
             playerGPS = `(${gx}, ${gy})`;
             suburbMap.label.dataset.playerGPS = playerGPS;
             suburbMap.coords.textContent = "GPS: " + playerGPS;
 
             break outer;
           }
+        }
+      }
+    }
+  }
+
+  // ------------------------------------------------
+  // DRAW PLAYER DOT
+  // ------------------------------------------------
+
+  function drawPlayerDot() {
+    if (currentViewSuburb !== playerSuburb) return;
+
+    const pageText = document.body.textContent;
+
+    // find player's current coordinates
+    let sx = -1, sy = -1;
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        if (suburbNames[y][x] === playerSuburb) {
+          sx = x; sy = y; break;
+        }
+      }
+    }
+    if (sx === -1) return;
+
+    outer: for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        const gx = sx * 10 + x;
+        const gy = sy * 10 + y;
+        const entry = B[gy]?.[gx];
+
+        if (entry && pageText.includes(entry[1])) {
+          const td = suburbCells[y][x];
+          td.textContent = "●";
+          td.style.color = "#FFFFFF";
+          td.style.textAlign = "center";
+          td.style.lineHeight = "22px";
+          td.style.fontSize = "14px";
+          td.style.cursor = "default";
+
+          playerGPS = `(${gx}, ${gy})`;
+          suburbMap.coords.textContent = "GPS: " + playerGPS;
+          break outer;
         }
       }
     }
