@@ -13,8 +13,8 @@
 // // @updateURL https://update.greasyfork.org/scripts/567867/WWDead%20Tactical%20Map%20v20.meta.js
 
 // My (xunoaib's) Fork:
-// @downloadURL https://github.com/xunoaib/wwdead_tacticalmap/blob/main/TacticalMap.user.js
-// @updateURL https://github.com/xunoaib/wwdead_tacticalmap/blob/main/TacticalMap.meta.js
+// @downloadURL https://raw.githubusercontent.com/xunoaib/wwdead_tacticalmap/main/TacticalMap.user.js
+// @updateURL   https://raw.githubusercontent.com/xunoaib/wwdead_tacticalmap/main/TacticalMap.meta.js
 
 // ==/UserScript==
 
