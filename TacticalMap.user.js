@@ -13552,7 +13552,7 @@ cursor:pointer;
     } else {
       suburbMap.label.textContent = currentViewSuburb;
     }
-    suburbMap.coords.textContent = "";
+    suburbMap.coords.textContent = "GPS: " + playerGPS;
   });
 
   // ------------------------------------------------
