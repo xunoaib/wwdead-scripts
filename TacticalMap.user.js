@@ -13840,18 +13840,20 @@
     return null;
   }
 
-  function updateMaps() {
+  function updateGlobals() {
     const suburbElem = document.querySelector(".sb");
-    if (!suburbElem) return;
+    if (!suburbElem) {
+      console.error("Couldn't find suburb element");
+      return;
+    }
+    playerSuburb = suburbElem.textContent.trim();
 
-    const suburb = suburbElem.textContent.trim();
-
-    playerSuburb = suburb;
-    [playerSX, playerSY] = suburbCoordsByName(suburb);
+    [playerSX, playerSY] = suburbCoordsByName(playerSuburb);
     [playerGX, playerGY] = globalPlayerCoords();
+  }
 
+  function updateMaps() {
     // highlight city suburb
-
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
         if (y === playerSY && x === playerSX) {
@@ -13938,6 +13940,7 @@
 
   window.addEventListener("load", async () => {
 
+    updateGlobals();
     await createMainContainer();
 
     setupCityInteractions();
