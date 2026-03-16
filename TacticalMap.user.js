@@ -13463,6 +13463,10 @@
     suburbMap = await makeMap("Suburb Map", 10, "suburb");
     miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
 
+    // override initial labels
+    miniMap.label.textContent = `Local (${playerSuburb})`;
+    cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
+
     // helper to create toggle checkboxes
     const createMapToggle = async (mapObj, key, labelText) => {
       const label = document.createElement("label");
@@ -13609,20 +13613,18 @@
         td.addEventListener("mouseenter", () => {
           if (td.dataset.name) {
             const isPlayer = (td.textContent === "●");
-            miniMap.label.textContent = isPlayer ? td.dataset.name : td.dataset.name;
-            miniMap.coords.textContent = "GPS: " + td.dataset.gps;
+            miniMap.label.textContent = isPlayer ? td.dataset.name + " (You)" : td.dataset.name;
           } else {
-            // hovering an empty street/tile
-            miniMap.label.textContent = "Street";
-            miniMap.coords.textContent = "GPS: " + td.dataset.gps;
+            miniMap.label.textContent = "Street"; // hovering empty/street tile
           }
+          miniMap.coords.textContent = "GPS: " + td.dataset.gps;
         });
       }
     }
 
     // reset to "local" and player gps when mouse leaves the minimap
     miniMap.wrap.addEventListener("mouseleave", () => {
-      miniMap.label.textContent = "Local";
+      miniMap.label.textContent = `Local (${playerSuburb})`;
       miniMap.coords.textContent = `Center: (${playerGX}, ${playerGY})`;
     });
   }
@@ -13666,10 +13668,12 @@
 
         td.addEventListener("mouseleave", () => {
           cityMap.label.textContent = cityMap.title;
+          cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
         });
 
         td.addEventListener("click", () => {
           selectedSuburb = suburbNames[y][x];
+          cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
           drawSuburbMap(x, y);
         });
       }
