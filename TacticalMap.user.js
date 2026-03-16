@@ -13444,7 +13444,7 @@
   // MAP BUILDER
   // ------------------------------------------------
 
-  function makeMap(title, size = 10) {
+  async function makeMap(title, size = 10, key) {
     const wrap = document.createElement("div");
     wrap.style.width = (size * 22) + "px";
     wrap.style.display = "flex";
@@ -13482,6 +13482,24 @@
       wrap.style.width = isMinimised ? "auto" : (size * 22) + "px";
     };
 
+    // persistence logic for individual maps
+    let isMinimised = await GM.getValue(`map_collapsed_${key}`, false);
+
+    const updateUI = () => {
+      table.style.display = isMinimised ? "none" : "table";
+      coords.style.display = isMinimised ? "none" : "block";
+      indicator.textContent = isMinimised ? "▸" : "▾";
+      wrap.style.width = isMinimised ? "80px" : (size * 22) + "px";
+    };
+
+    header.onclick = async () => {
+      isMinimised = !isMinimised;
+      updateUI();
+      await GM.setValue(`map_collapsed_${key}`, isMinimised);
+    };
+
+    updateUI(); // set initial state from storage
+
     const cells = [];
     for (let y = 0; y < size; y++) {
       const tr = table.insertRow();
@@ -13500,9 +13518,9 @@
     return { wrap, label, coords, table, title, cells };
   }
 
-  const cityMap = makeMap("City Map");
-  const suburbMap = makeMap("Suburb Map");
-  const miniMap = makeMap("Local", LOCAL_MAP_SIZE); // size should be odd
+  const cityMap = await makeMap("City Map", 10, "city");
+  const suburbMap = await makeMap("Suburb Map", 10, "suburb");
+  const miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
 
   cityMap.coords.style.visibility = "hidden";
 
