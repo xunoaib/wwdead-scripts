@@ -13630,37 +13630,93 @@ cursor:pointer;
   }
 
   // ------------------------------------------------
+  // FIND EXACT PLAYER GPS LOCATION
+  // ------------------------------------------------
+
+  function globalPlayerCoords() {
+
+    // if GPS exists, directly parse coordinates and return
+    const element = document.querySelector('input[value*="GPS unit"]');
+    if (element) {
+      const matches = element.value.match(/\d+/g);
+      if (matches && matches.length >= 2) {
+        return [Number(matches[0]), Number(matches[1])];
+      } else {
+        console.error("Found GPS but no coordinates?");
+      }
+    }
+
+    // otherwise, find an exact match of neighboring tiles
+
+    function normalizeName(n) {
+      return n.toLowerCase()
+              .replace(/\b(the|a|an)\b/g, '')
+              .replace(/\s+/g, ' ').trim();
+    }
+
+    let inputs = document.querySelectorAll('table.c input[type="submit"]');
+    const neighborSig = Array.from(inputs).map(input => normalizeName(input.value)).join('__');
+
+    // treat every tile in suburb as the current "center"
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        const gx = playerSX * 10 + x;
+        const gy = playerSY * 10 + y;
+
+        // retrieve all neighboring tiles
+        const neighbors = [];
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const nx = gx + dx;
+            const ny = gy + dy;
+            const tile = B[ny]?.[nx];
+            if (tile !== undefined) {
+              neighbors.push(tile[1]);
+            }
+          }
+        }
+
+        const newNeighborSig = Array.from(neighbors).map(normalizeName).join('__');
+        if (newNeighborSig == neighborSig) {
+          return [gx, gy]
+        }
+      }
+    }
+
+    console.error("Failed to determine player coordinates");
+    return null;
+  }
+
+  // ------------------------------------------------
   // UPDATE MAPS
   // ------------------------------------------------
+
+  function suburbCoordsByName(suburb) {
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        if (suburbNames[y][x] === suburb) {
+          return [x, y]
+        }
+      }
+    }
+    console.error(`Couldn't find suburb: ${suburb}`)
+    return null;
+  }
 
   function updateMaps() {
     const suburbElem = document.querySelector(".sb");
     if (!suburbElem) return;
 
     const suburb = suburbElem.textContent.trim();
+
     playerSuburb = suburb;
-
-    let sx = -1,
-      sy = -1;
-
-    for (let y = 0; y < 10; y++) {
-      for (let x = 0; x < 10; x++) {
-        if (suburbNames[y][x] === suburb) {
-          sx = x;
-          sy = y;
-          playerSX = x;
-          playerSY = y;
-        }
-      }
-    }
-
-    if (sx === -1) return;
+    [playerSX, playerSY] = suburbCoordsByName(suburb)
 
     // highlight city suburb
 
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
-        if (y === sy && x === sx) {
+        if (y === playerSY && x === playerSX) {
           cityCells[y][x].style.border = "2px solid #000";
           cityCells[y][x].style.boxShadow =
             "0 0 10px 3px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.5)";
@@ -13675,7 +13731,7 @@ cursor:pointer;
     // auto-load player suburb if none selected
 
     if (!selectedSuburb) {
-      drawSuburbMap(sx, sy);
+      drawSuburbMap(playerSX, playerSY);
     }
 
     // ------------------------------------------------
@@ -13687,8 +13743,8 @@ cursor:pointer;
 
       outer: for (let y = 0; y < 10; y++) {
         for (let x = 0; x < 10; x++) {
-          const gx = sx * 10 + x;
-          const gy = sy * 10 + y;
+          const gx = playerSX * 10 + x;
+          const gy = playerSY * 10 + y;
 
           const entry = B[gy]?.[gx];
 
@@ -13711,41 +13767,21 @@ cursor:pointer;
   function drawPlayerDot() {
     if (currentViewSuburb !== playerSuburb) return;
 
-    const pageText = document.body.textContent;
+    let [gx, gy] = globalPlayerCoords();
+    let x = gx - playerSX * 10;
+    let y = gy - playerSY * 10;
 
-    // find player's current coordinates
-    let sx = -1, sy = -1;
-    for (let y = 0; y < 10; y++) {
-      for (let x = 0; x < 10; x++) {
-        if (suburbNames[y][x] === playerSuburb) {
-          sx = x; sy = y; break;
-        }
-      }
-    }
-    if (sx === -1) return;
+    const td = suburbCells[y][x];
+    td.textContent = "●";
+    td.style.color = "#FFFFFF";
+    td.style.textAlign = "center";
+    td.style.lineHeight = "22px";
+    td.style.fontSize = "14px";
+    td.style.cursor = "default";
+    td.title = "You are here";
 
-    outer: for (let y = 0; y < 10; y++) {
-      for (let x = 0; x < 10; x++) {
-        const gx = sx * 10 + x;
-        const gy = sy * 10 + y;
-        const entry = B[gy]?.[gx];
-
-        if (entry && pageText.includes(entry[1])) {
-          const td = suburbCells[y][x];
-          td.textContent = "●";
-          td.style.color = "#FFFFFF";
-          td.style.textAlign = "center";
-          td.style.lineHeight = "22px";
-          td.style.fontSize = "14px";
-          td.style.cursor = "default";
-          td.title = "You are here";
-
-          playerGPS = `(${gx}, ${gy})`;
-          suburbMap.coords.textContent = "GPS: " + playerGPS;
-          break outer;
-        }
-      }
-    }
+    playerGPS = `(${gx}, ${gy})`;
+    suburbMap.coords.textContent = "GPS: " + playerGPS;
   }
 
   // ------------------------------------------------
@@ -13755,7 +13791,6 @@ cursor:pointer;
   window.addEventListener("load", async () => {
     await setCollapsed(await GM.getValue("collapsed") ?? false);
     updateMaps();
-    // setInterval(updateMaps, 2000);
   });
 
   // ------------------------------------------------
