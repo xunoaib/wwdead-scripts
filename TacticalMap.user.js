@@ -13411,40 +13411,50 @@
   // CREATE MAP WINDOW (Collapsible)
   // ------------------------------------------------
 
-  const container = document.createElement("div");
+  async function createMainContainer() {
 
-  container.style.cssText =
-    "position:fixed;bottom:10px;right:10px;background:#556655;border-top:3px solid #778877;border-left:3px solid #778877;border-right:3px solid #334433;border-bottom:3px solid #334433;padding:6px;display:none;flex-direction:column;gap:6px;z-index:9999;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11px;line-height:1.2;box-shadow:0 8px 20px rgba(0,0,0,0.7),0 0 12px rgba(120,180,120,0.25);box-sizing:border-box;";
+    async function setCollapsed(value) {
+      collapsed = value;
+      container.style.display = "flex";
+      mapHolder.style.display = collapsed ? "none" : "flex";
+      toggleBtn.textContent = collapsed ? "[+]" : "[-]";
+      await GM.setValue("collapsed", collapsed);
+    }
 
-  document.body.appendChild(container);
+    let collapsed = false; // main panel collapse flag
 
-  // collapse button
+    const container = document.createElement("div");
+    container.style.cssText =
+      "position:fixed;bottom:10px;right:10px;background:#556655;border-top:3px solid #778877;border-left:3px solid #778877;border-right:3px solid #334433;border-bottom:3px solid #334433;padding:6px;display:none;flex-direction:column;gap:6px;z-index:9999;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11px;line-height:1.2;box-shadow:0 8px 20px rgba(0,0,0,0.7),0 0 12px rgba(120,180,120,0.25);box-sizing:border-box;";
 
-  const toggleBtn = document.createElement("div");
-  toggleBtn.textContent = "[-]";
-  toggleBtn.style.cssText =
-    "cursor:pointer;color:#BBCCBB;text-align:right;font-weight:bold";
+    // collapse button
+    const toggleBtn = document.createElement("div");
+    toggleBtn.textContent = "[-]";
+    toggleBtn.style.cssText =
+      "cursor:pointer;color:#BBCCBB;text-align:right;font-weight:bold";
+    toggleBtn.onclick = async () => await setCollapsed(!collapsed);
+    container.appendChild(toggleBtn);
 
-  container.appendChild(toggleBtn);
+    // map holder
+    const mapHolder = document.createElement("div");
+    mapHolder.style.cssText = "display:flex;gap:10px;align-items:flex-start";
 
-  // map holder
+    container.appendChild(mapHolder);
+    document.body.appendChild(container);
 
-  const mapHolder = document.createElement("div");
-  mapHolder.style.cssText = "display:flex;gap:10px;align-items:flex-start";
+    // create maps
+    cityMap = await makeMap("City Map", 10, "city");
+    suburbMap = await makeMap("Suburb Map", 10, "suburb");
+    miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
 
-  container.appendChild(mapHolder);
+    cityMap.coords.style.visibility = "hidden";
 
-  let collapsed = false;
+    mapHolder.appendChild(cityMap.wrap);
+    mapHolder.appendChild(suburbMap.wrap);
+    mapHolder.appendChild(miniMap.wrap);
 
-  async function setCollapsed(value) {
-    collapsed = value;
-    container.style.display = "flex";
-    mapHolder.style.display = collapsed ? "none" : "flex";
-    toggleBtn.textContent = collapsed ? "[+]" : "[-]";
-    await GM.setValue("collapsed", collapsed);
+    await setCollapsed(await GM.getValue("collapsed") ?? false);
   }
-
-  toggleBtn.onclick = async () => await setCollapsed(!collapsed);
 
   // ------------------------------------------------
   // MAP BUILDER
@@ -13881,22 +13891,11 @@
 
   window.addEventListener("load", async () => {
 
-    cityMap = await makeMap("City Map", 10, "city");
-    suburbMap = await makeMap("Suburb Map", 10, "suburb");
-    miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
-
-    mapHolder.appendChild(cityMap.wrap);
-    mapHolder.appendChild(suburbMap.wrap);
-    mapHolder.appendChild(miniMap.wrap);
-
-    cityMap.coords.style.visibility = "hidden";
+    await createMainContainer();
 
     setupCityInteractions(); 
     setupSuburbInteractions();
     setupLocalInteractions();
-
-    // load main window collapsed state
-    await setCollapsed(await GM.getValue("collapsed") ?? false);
 
     updateMaps();
     setupPulse();
