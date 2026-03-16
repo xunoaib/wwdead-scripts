@@ -13419,33 +13419,42 @@
   // ------------------------------------------------
 
   async function createMainContainer() {
-
-    async function setCollapsed(value) {
-      collapsed = value;
-      container.style.display = "flex";
-      mapHolder.style.display = collapsed ? "none" : "flex";
-      toggleBtn.textContent = collapsed ? "[+]" : "[-]";
-      await GM.setValue("collapsed", collapsed);
-    }
-
-    let collapsed = false; // main panel collapse flag
+    let collapsed = false;
 
     const container = document.createElement("div");
     container.style.cssText =
       "position:fixed;bottom:10px;right:10px;background:#556655;border-top:3px solid #778877;border-left:3px solid #778877;border-right:3px solid #334433;border-bottom:3px solid #334433;padding:6px;display:none;flex-direction:column;gap:6px;z-index:9999;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11px;line-height:1.2;box-shadow:0 8px 20px rgba(0,0,0,0.7),0 0 12px rgba(120,180,120,0.25);box-sizing:border-box;";
 
-    // collapse button
-    const toggleBtn = document.createElement("div");
-    toggleBtn.textContent = "[-]";
-    toggleBtn.style.cssText =
-      "cursor:pointer;color:#BBCCBB;text-align:right;font-weight:bold";
-    toggleBtn.onclick = async () => await setCollapsed(!collapsed);
-    container.appendChild(toggleBtn);
+    // top bar for controls
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid #445544;";
 
-    // map holder
+    // checkbox container
+    const controls = document.createElement("div");
+    controls.style.cssText = "display:flex; gap:6px; color:#BBCCBB; font-size:10px;";
+
+    // main collapse button
+    const mainToggleBtn = document.createElement("div");
+    mainToggleBtn.textContent = "[-]";
+    mainToggleBtn.style.cssText = "cursor:pointer;color:#BBCCBB;font-weight:bold;margin-left:5px;";
+
+    topBar.appendChild(controls);
+    topBar.appendChild(mainToggleBtn);
+    container.appendChild(topBar);
+
+    async function setCollapsed(value) {
+      collapsed = value;
+      container.style.display = "flex";
+      mapHolder.style.display = collapsed ? "none" : "flex";
+      controls.style.display = collapsed ? "none" : "flex"; // Hide checkboxes when main is collapsed
+      mainToggleBtn.textContent = collapsed ? "[+]" : "[-]";
+      await GM.setValue("collapsed", collapsed);
+    }
+
+    mainToggleBtn.onclick = async () => await setCollapsed(!collapsed);
+
     const mapHolder = document.createElement("div");
     mapHolder.style.cssText = "display:flex;gap:10px;align-items:flex-start";
-
     container.appendChild(mapHolder);
     document.body.appendChild(container);
 
@@ -13454,7 +13463,33 @@
     suburbMap = await makeMap("Suburb Map", 10, "suburb");
     miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
 
-    cityMap.coords.style.visibility = "hidden";
+    // helper to create toggle checkboxes
+    const createMapToggle = async (mapObj, key, labelText) => {
+      const label = document.createElement("label");
+      label.style.cssText = "display:flex; align-items:center; gap:2px; cursor:pointer;";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.style.margin = "0";
+
+      let isVisible = await GM.getValue(`map_visible_${key}`, true);
+      cb.checked = isVisible;
+      mapObj.wrap.style.display = isVisible ? "flex" : "none";
+
+      cb.onchange = async () => {
+        mapObj.wrap.style.display = cb.checked ? "flex" : "none";
+        await GM.setValue(`map_visible_${key}`, cb.checked);
+      };
+
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(labelText));
+      controls.appendChild(label);
+    };
+
+    // add checkboxes to upper right
+    await createMapToggle(cityMap, "city", "City");
+    await createMapToggle(suburbMap, "suburb", "Sub");
+    await createMapToggle(miniMap, "local", "Loc");
 
     mapHolder.appendChild(cityMap.wrap);
     mapHolder.appendChild(suburbMap.wrap);
@@ -13473,20 +13508,14 @@
     wrap.style.display = "flex";
     wrap.style.flexDirection = "column";
 
-    // create a header container for the label and a small indicator
     const header = document.createElement("div");
-    header.style.cssText = "cursor:pointer; user-select:none; display:flex; justify-content:center; align-items:center; gap:4px;";
+    header.style.cssText = "display:flex; justify-content:center; align-items:center; gap:4px;";
 
     const label = document.createElement("div");
     label.textContent = title;
     label.style.cssText = "color:#BBCCBB; margin-bottom:2px; text-align:center; font-weight:bold;";
 
-    const indicator = document.createElement("span");
-    indicator.textContent = "▾"; // default: expanded
-    indicator.style.fontSize = "9px";
-
     header.appendChild(label);
-    header.appendChild(indicator);
 
     const coords = document.createElement("div");
     coords.textContent = "\u00A0";
@@ -13494,24 +13523,6 @@
 
     const table = document.createElement("table");
     table.style.cssText = "border-collapse:collapse; table-layout:fixed; width:" + (size * 22) + "px;";
-
-    // persistence logic for individual maps
-    let isMinimised = await GM.getValue(`map_collapsed_${key}`, false);
-
-    const updateUI = () => {
-      table.style.display = isMinimised ? "none" : "table";
-      coords.style.display = isMinimised ? "none" : "block";
-      indicator.textContent = isMinimised ? "▸" : "▾";
-      wrap.style.width = isMinimised ? "80px" : (size * 22) + "px";
-    };
-
-    header.onclick = async () => {
-      isMinimised = !isMinimised;
-      updateUI();
-      await GM.setValue(`map_collapsed_${key}`, isMinimised);
-    };
-
-    updateUI(); // set initial state from storage
 
     const cells = [];
     for (let y = 0; y < size; y++) {
