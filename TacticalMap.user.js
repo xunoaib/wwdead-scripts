@@ -13893,22 +13893,6 @@
   }
 
   // ------------------------------------------------
-  // START SCRIPT
-  // ------------------------------------------------
-
-  window.addEventListener("load", async () => {
-
-    await createMainContainer();
-
-    setupCityInteractions(); 
-    setupSuburbInteractions();
-    setupLocalInteractions();
-
-    updateMaps();
-    setupPulse();
-  });
-
-  // ------------------------------------------------
   // CENTER QUADRANT PULSE
   // ------------------------------------------------
 
@@ -13936,5 +13920,21 @@
       }
     }, 50);
   }
+
+  // ------------------------------------------------
+  // START SCRIPT
+  // ------------------------------------------------
+
+  window.addEventListener("load", async () => {
+
+    await createMainContainer();
+
+    setupCityInteractions();
+    setupSuburbInteractions();
+    setupLocalInteractions();
+
+    updateMaps();
+    setupPulse();
+  });
 
 })();
