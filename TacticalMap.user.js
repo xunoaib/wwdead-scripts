@@ -7,23 +7,25 @@
 // @grant        GM.setValue
 // @grant        GM.getValue
 // @license      GNU General Public License v2 or later; http://www.gnu.org/licenses/gpl.txt
-// @downloadURL  https://github.com/xunoaib/wwdead_tacticalmap/raw/refs/heads/main/TacticalMap.user.js
-// @updateURL    https://github.com/xunoaib/wwdead_tacticalmap/raw/refs/heads/main/TacticalMap.meta.js
+// @downloadURL https://greasyfork.org/en/scripts/567867-wwdead-tactical-map.user.js
+// @updateURL https://greasyfork.org/en/scripts/567867-wwdead-tactical.meta.js
 // ==/UserScript==
 
 /**
  * Original version: http://torbjorn.org/urbandead/gm/ud.navigation.user.js
- * Modified version made by http://wiki.urbandead.com/index.php/User:Janzak
- * More tweaks and changes by http://wiki.urbandead.com/index.php/User:Aichon
- * Complete re-write and redesign by DTTL with permission and guidance from Aichon
+ * Modified version by http://wiki.urbandead.com/index.php/User:Janzak
+ * Additional tweaks by http://wiki.urbandead.com/index.php/User:Aichon
  *
- * © 2026 DTTL
+ * Rewrite for WWDead by DTTL (2026)
  *
+ * Major improvements and expansion contributed by Xunoaib (2026)
+ * Source: https://github.com/xunoaib/wwdead_tacticalmap
+ *
+ * Thanks to the Urban Dead / World Wide Dead scripting community.
  *
  * License:
- *   GNU General Public License v2 or later
- *   http://www.gnu.org/licenses/gpl.txt
- *
+ * GNU General Public License v2 or later
+ * http://www.gnu.org/licenses/gpl.txt
  */
 
 (async function () {
