@@ -96,7 +96,6 @@ function addRules(css) {
     // ======================================================
     // SCOPED LINK STYLING
     // ======================================================
-    css.push("td.gp a { color: #ded; }"); // safe default link color
     css.push("td.gp a:hover { text-decoration: underline !important; }");
     css.push("td.gp table.c a:not([class^='con']) { color: #000 !important; }"); // do not override player names
     css.push("td.gp table.c td.sb a { color: #ded !important; }");
