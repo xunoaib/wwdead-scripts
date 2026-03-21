@@ -14883,7 +14883,6 @@ function updateGlobals() {
   setupLocalInteractions();
 
   updateMaps();
-  setupPulse();
 
   setInterval(() => {
     updateGlobals();              // refresh position
