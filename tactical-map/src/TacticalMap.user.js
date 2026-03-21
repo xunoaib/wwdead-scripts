@@ -14848,11 +14848,5 @@ function updateGlobals() {
 
   updateMaps();
   setupPulse();
-
-  setInterval(() => {
-    updateGlobals();              // refresh position
-    saveCurrentCharacterPosition(); // save AFTER update
-    updateMaps();
-  }, 5000);
 });
 })();
