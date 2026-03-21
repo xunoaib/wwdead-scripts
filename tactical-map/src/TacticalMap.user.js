@@ -14847,10 +14847,15 @@ function updateGlobals() {
     td.textContent = "●";
     td.style.color = "#FFFFFF";
     td.style.textAlign = "center";
-    td.style.lineHeight = "22px";
+    td.style.lineHeight = "1";
     td.style.fontSize = "14px";
     td.style.cursor = "default";
     td.title = "You are here";
+    td.style.width = "22px";
+    td.style.height = "22px";
+    td.style.display = "flex";
+    td.style.alignItems = "center";
+    td.style.justifyContent = "center";
 
     suburbMap.coords.textContent = `GPS: (${playerGX}, ${playerGY})`;
   }
