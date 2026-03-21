@@ -14847,6 +14847,5 @@ function updateGlobals() {
   setupLocalInteractions();
 
   updateMaps();
-  setupPulse();
 });
 })();
