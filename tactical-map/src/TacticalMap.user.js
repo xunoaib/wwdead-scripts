@@ -14784,7 +14784,9 @@ function updateGlobals() {
     return;
   }
 
-  [playerSX, playerSY] = suburbCoordsByName(suburbElem.textContent.trim() || "undefined") ?? [null, null];
+  playerSuburb = suburbElem.textContent.trim();
+
+  [playerSX, playerSY] = suburbCoordsByName(playerSuburb) ?? [null, null];
   [playerGX, playerGY] = globalPlayerCoords() ?? [null, null];
 }
 
