@@ -5,8 +5,7 @@
 // @author       xunoaib
 // @description  Remembers last used weapon and attack target
 // @include      /^https:\/\/wwdead\.com\/classic\/?(\?.*)?$/
-// @grant        GM.setValue
-// @grant        GM.getValue
+// @grant        none
 // @license      GNU General Public License v2 or later; http://www.gnu.org/licenses/gpl.txt
 // ==/UserScript==
 
@@ -14,20 +13,30 @@
 // - Prevent "clobbering" when loading historical URLs.
 // - Verify URL params against available select options before persisting to storage.
 
-(async function() {
+(function() {
   'use strict';
 
+  const STORAGE_KEY = 'wwd_weapon_memory';
+
+  // identify character
   const profileLink = document.querySelector('div.gt a[href*="/profile/"]');
   if (!profileLink) return;
   const charId = profileLink.href.split('/').pop();
 
-  const STORAGE_KEY = 'wwd_weapon-memory';
-  let profiles = await GM.getValue(STORAGE_KEY, {});
+  // load data from localstorage
+  let profiles = {};
+  try {
+    const rawData = localStorage.getItem(STORAGE_KEY);
+    profiles = rawData ? JSON.parse(rawData) : {};
+  } catch (e) {
+    console.error("Failed to parse weapon memory storage", e);
+  }
 
   if (!profiles[charId]) {
     profiles[charId] = {};
   }
 
+  // update memory from url params
   const urlParams = new URLSearchParams(window.location.search);
   const lastAttackParam = urlParams.get('lastAttack');
   const lastTargetParam = urlParams.get('lastTarget');
@@ -42,12 +51,14 @@
     dataChanged = true;
   }
 
+  // save back to localstorage
   if (dataChanged) {
-    await GM.setValue(STORAGE_KEY, profiles);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
   }
 
   const memory = profiles[charId];
 
+  // apply memory to dom
   if (memory.weapon) {
     const weaponSelect = document.querySelector('select[name="attackType"]');
     if (weaponSelect && [...weaponSelect.options].some(o => o.value === memory.weapon)) {
