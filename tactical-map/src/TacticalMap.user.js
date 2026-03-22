@@ -14096,10 +14096,10 @@
 
   const B = generateMaltonGrid();
 
-  let playerSX = -1; // suburb X
-  let playerSY = -1; // suburb Y
-  let playerGX = -1; // global X
-  let playerGY = -1; // global Y
+  let playerSX = null; // suburb X
+  let playerSY = null; // suburb Y
+  let playerGX = null; // global X
+  let playerGY = null; // global Y
 
   let cityMap, suburbMap, miniMap;
 
@@ -14173,8 +14173,8 @@ function saveCurrentCharacterPosition() {
     return;
   }
 
-  if (playerSX === -1 || playerSY === -1) return;
-  if (playerGX === -1 || playerGY === -1) return;
+  if (playerSX === null || playerSY === null) return;
+  if (playerGX === null || playerGY === null) return;
 
   let chars = getStoredCharacters();
 
@@ -14392,7 +14392,7 @@ controls.appendChild(clearBtn);
   // DRAW MINIMAP AROUND PLAYER
   // ------------------------------------------------
   function drawMiniMap() {
-    if (playerGX === -1 || playerGY === -1) return;
+    if (playerGX === null || playerGY === null) return;
 
     const size = miniMap.cells.length;
     const offset = Math.floor(size / 2);
@@ -14487,43 +14487,7 @@ controls.appendChild(clearBtn);
 
     return "#A9D3B0";
   }
-
-  function setupCityInteractions() {
-    for (let y = 0; y < 10; y++) {
-      for (let x = 0; x < 10; x++) {
-        const td = cityMap.cells[y][x];
-
-        td.style.cssText = `
-          width:22px;
-          height:22px;
-          border:1px solid #000;
-          box-sizing:border-box;
-          background:${getQuadrantColor(y, x)};
-          transition:box-shadow .3s ease,border .2s ease;
-          cursor:pointer;
-        `;
-
-        td.addEventListener("mouseenter", () => {
-          const isPlayerSuburb = y === playerSY && x === playerSX;
-
-          cityMap.label.textContent = isPlayerSuburb
-            ? suburbNames[y][x] + " (You)"
-            : suburbNames[y][x];
-        });
-
-        td.addEventListener("mouseleave", () => {
-          cityMap.label.textContent = cityMap.title;
-          cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
-        });
-
-        td.addEventListener("click", () => {
-          selectedSuburb = suburbNames[y][x];
-          cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
-          drawSuburbMap(x, y);
-        });
-      }
-    }
-  }
+  
 // ------------------------------------------------
 // CITY MAP SELECTED SUBURB + LINKS (Second Line)
 // ------------------------------------------------
@@ -14592,6 +14556,11 @@ function setupCityInteractions() {
         cityMap.label.textContent = displayName;
       });
 
+      td.addEventListener("mouseleave", () => {
+        cityMap.label.textContent = cityMap.title;
+        cityMap.coords.textContent = `Selected: ${selectedSuburb || playerSuburb}`;
+      });
+
       td.addEventListener("click", () => {
         selectedSuburb = suburbNames[y][x];
         drawSuburbMap(x, y);
@@ -14640,6 +14609,8 @@ function setupCityInteractions() {
   // ------------------------------------------------
 
   function drawSuburbMap(sx, sy) {
+    if (sx === null || sy === null) return;
+
     const suburbName = suburbNames[sy][sx];
     currentViewSuburb = suburbName;
     suburbMap.coords.textContent = "\u00A0";
@@ -14755,7 +14726,7 @@ function setupCityInteractions() {
       }
     }
 
-    console.error("Failed to determine player coordinates");
+    console.warn("Failed to determine global player coordinates");
     return null;
   }
   // ------------------------------------------------
@@ -14770,12 +14741,13 @@ function setupCityInteractions() {
         }
       }
     }
-    console.error(`Couldn't find suburb: ${suburb}`);
+    console.error(`Couldn't find suburb coordinates by name: ${suburb}`);
     return null;
   }
 
 function updateGlobals() {
   const suburbElem = document.querySelector(".sb");
+
   if (!suburbElem) {
     console.error("Couldn't find suburb element");
     return;
@@ -14783,16 +14755,10 @@ function updateGlobals() {
 
   playerSuburb = suburbElem.textContent.trim();
 
-  const suburbCoords = suburbCoordsByName(playerSuburb);
-  if (!suburbCoords) return;
-
-  [playerSX, playerSY] = suburbCoords;
-
-  const coords = globalPlayerCoords();
-  if (coords) {
-    [playerGX, playerGY] = coords;
-  }
+  [playerSX, playerSY] = suburbCoordsByName(playerSuburb) ?? [null, null];
+  [playerGX, playerGY] = globalPlayerCoords() ?? [null, null];
 }
+
   function updateMaps() {
     // highlight city suburb
     for (let y = 0; y < 10; y++) {
@@ -14831,11 +14797,11 @@ function updateGlobals() {
   // ------------------------------------------------
 
   function drawPlayerDot() {
+    if (playerGX === null || playerGY === null) return;
     if (currentViewSuburb !== playerSuburb) return;
 
-    let [gx, gy] = globalPlayerCoords();
-    let x = gx - playerSX * 10;
-    let y = gy - playerSY * 10;
+    let x = playerGX - playerSX * 10;
+    let y = playerGY - playerSY * 10;
 
     const td = suburbMap.cells[y][x];
     td.textContent = "●";
@@ -14883,11 +14849,6 @@ function updateGlobals() {
   setupLocalInteractions();
 
   updateMaps();
-
-  setInterval(() => {
-    updateGlobals();              // refresh position
-    saveCurrentCharacterPosition(); // save AFTER update
-    updateMaps();
-  }, 5000);
+  setupPulse();
 });
 })();
