@@ -14835,7 +14835,9 @@ function updateGlobals() {
       }
 
       .map-current-player-suburb {
-        border: 2px solid #000 !important;
+        border: 2px dashed #000 !important;
+        outline: 2px dashed #000 !important;
+        outline-offset: -2px !important;
       }
     `;
     document.head.appendChild(style);
