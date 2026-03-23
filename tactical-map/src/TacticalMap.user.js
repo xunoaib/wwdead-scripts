@@ -14218,8 +14218,6 @@ function drawAltMarkers() {
   const currentId = getCharacterId();
 
   for (const id in chars) {
-    if (id === currentId) continue;
-
     const posAlt = chars[id];
     if (posAlt.sx === undefined || posAlt.sy === undefined) continue;
 
