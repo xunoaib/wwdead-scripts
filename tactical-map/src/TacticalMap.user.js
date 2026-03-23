@@ -14829,8 +14829,6 @@ function updateGlobals() {
       }
 
       .map-suburb-selected {
-        outline: 2px #FFF !important;
-        outline-offset: -1px !important;
         z-index: 20 !important;
         position: relative !important;
         box-shadow: 0 0 4px 1px rgba(0, 0, 0, 1), 0 0 8px 2px rgba(0, 0, 0, 0.9), 0 0 12px 4px rgba(5,255, 255, 0.8), 0 0 18px 6px rgba(255, 255, 255, 0.7), 0 0 24px 8px rgba(255, 255, 255, 0.6), inset 0 0 6px 2px rgba(89, 255, 27, 0.8), inset 0 0 10px 4px rgba(89, 255, 27, 0.5);
