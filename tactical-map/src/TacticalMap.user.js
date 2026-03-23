@@ -14829,7 +14829,7 @@ function updateGlobals() {
       }
 
       .map-suburb-selected {
-        outline: 2px dashed #FFF !important;
+        outline: 2px #FFF !important;
         outline-offset: -1px !important;
         z-index: 20 !important;
         position: relative !important;
