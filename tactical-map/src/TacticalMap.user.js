@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name         WWDead Tactical Map
 // @namespace    wwd-mini-map-malton
-// @version      3.1.5
+// @version      3.2.0
+// @description  Tactical Map improvements: localStorage storage, dynamic map sizing, alt indicators, and bug fixes
 // @author       DTTL
 // @description  Displays city and suburb map in WWDead
 // @include  /^https:\/\/wwdead\.com\/classic\/?(\?.*)?$/
@@ -31,14 +32,12 @@
 (async function () {
   "use strict";
 
-<<<<<<< adjustable-local-map-size
   let LOCAL_MAP_RADIUS = parseInt(localStorage.getItem("LOCAL_MAP_RADIUS") || 5);
   let LOCAL_MAP_SIZE = LOCAL_MAP_RADIUS * 2 + 1;
-=======
-  const LOCAL_MAP_SIZE = 11; // should be odd
+
   const MAIN_PLAYER_SYM = "●";
   const ALT_PLAYER_SYM = "▲";
->>>>>>> main
+
 
   // ------------------------------------------------
   // SUBURB NAMES
