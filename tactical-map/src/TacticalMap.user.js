@@ -14494,7 +14494,7 @@ controls.appendChild(clearBtn);
 
     return "#A9D3B0";
   }
-  
+
 // ------------------------------------------------
 // CITY MAP SELECTED SUBURB + LINKS (Second Line)
 // ------------------------------------------------
@@ -14572,6 +14572,7 @@ function setupCityInteractions() {
         selectedSuburb = suburbNames[y][x];
         drawSuburbMap(x, y);
         updateCityMapCoords(selectedSuburb);
+        updateMaps();
       });
     }
   }
@@ -14620,27 +14621,8 @@ function setupCityInteractions() {
 
     const suburbName = suburbNames[sy][sx];
     currentViewSuburb = suburbName;
+
     suburbMap.coords.textContent = "\u00A0";
-
-    // highlight the selected cell
-    for (let y = 0; y < 10; y++) {
-      for (let x = 0; x < 10; x++) {
-        const cell = cityMap.cells[y][x];
-        if (y === sy && x === sx) {
-        cell.style.outline = "2px dashed #FFF";
-          cell.style.outlineOffset = "-1px";
-          cell.style.zIndex = "20";
-          cell.style.position = "relative";
-          cell.style.boxShadow = " 0 0 4px 1px rgba(0, 0, 0, 1), 0 0 8px 2px rgba(0, 0, 0, 0.9), 0 0 12px 4px rgba(5,255, 255, 0.8), 0 0 18px 6px rgba(255, 255, 255, 0.7), 0 0 24px 8px rgba(255, 255, 255, 0.6), inset 0 0 6px 2px rgba(89, 255, 27, 0.8), inset 0 0 10px 4px rgba(89, 255, 27, 0.5)";
-        } else {
-          cell.style.position = "static";
-          cell.style.zIndex = "1";
-          cell.style.outline = "none";
-          cell.style.boxShadow = "none";
-        }
-      }
-    }
-
     suburbMap.label.textContent =
       suburbName === playerSuburb ? suburbName + " (You)" : suburbName;
 
@@ -14768,27 +14750,34 @@ function updateGlobals() {
 }
 
   function updateMaps() {
+    let viewX = playerSX;
+    let viewY = playerSY;
+
+    if (selectedSuburb) {
+      const coords = suburbCoordsByName(selectedSuburb);
+      if (coords) [viewX, viewY] = coords;
+    }
+
     // highlight city suburb
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
+        const cell = cityMap.cells[y][x];
+
+        cell.classList.remove('map-suburb-selected', 'map-current-player-suburb');
+        cell.style.background = getQuadrantColor(y, x);
+
         if (y === playerSY && x === playerSX) {
-          cityMap.cells[y][x].style.border = "2px solid #000";
-          cityMap.cells[y][x].style.boxShadow =
-            "0 0 10px 3px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.5)";
-        } else {
-          cityMap.cells[y][x].style.border = "1px solid #000";
-          cityMap.cells[y][x].style.boxShadow = "none";
-          cityMap.cells[y][x].style.background = getQuadrantColor(y, x);
+          cell.classList.add('map-current-player-suburb');
+        }
+
+        if (y === viewY && x === viewX) {
+          cell.classList.add('map-suburb-selected');
         }
       }
     }
 
-    if (!selectedSuburb) {
-      drawSuburbMap(playerSX, playerSY);
-    }
-
-      // draw other characters' positions on city map
-      drawAltMarkers();
+    drawSuburbMap(viewX, viewY);
+    drawAltMarkers();
 
     // set initial GPS coordinates in suburb map heading
     if (currentViewSuburb === playerSuburb) {
@@ -14839,6 +14828,18 @@ function updateGlobals() {
       .map-alt-highlight {
         outline: 2px dashed #ffffff !important;
         outline-offset: -1px !important;
+      }
+
+      .map-suburb-selected {
+        outline: 2px dashed #FFF !important;
+        outline-offset: -1px !important;
+        z-index: 20 !important;
+        position: relative !important;
+        box-shadow: 0 0 4px 1px rgba(0, 0, 0, 1), 0 0 8px 2px rgba(0, 0, 0, 0.9), 0 0 12px 4px rgba(5,255, 255, 0.8), 0 0 18px 6px rgba(255, 255, 255, 0.7), 0 0 24px 8px rgba(255, 255, 255, 0.6), inset 0 0 6px 2px rgba(89, 255, 27, 0.8), inset 0 0 10px 4px rgba(89, 255, 27, 0.5);
+      }
+
+      .map-current-player-suburb {
+        border: 2px solid #000 !important;
       }
     `;
     document.head.appendChild(style);
