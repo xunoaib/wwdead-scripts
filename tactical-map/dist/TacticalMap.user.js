@@ -14771,6 +14771,7 @@ function setupCityInteractions() {
         .toLowerCase()
         .replace(/\b(the|a|an)\b/g, "")
         .replace(/\s+/g, " ")
+        .replace(/ \[NT\]$/, "")
         .trim();
     }
 
