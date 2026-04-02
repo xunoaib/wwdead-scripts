@@ -1,11 +1,7 @@
 // ==UserScript==
 // @name         WWDead Tactical Map
 // @namespace    wwd-mini-map-malton
-<<<<<<< HEAD
 // @version      4.1.1
-=======
-// @version      4.1.0
->>>>>>> f50468d12b9e2381cf1f8781561b2dd2a42a42d2
 // @description  Tactical Map improvements: localStorage storage, dynamic map sizing, alt indicators, and bug fixes
 // @author       DTTL
 // @description  Displays city and suburb map in WWDead
