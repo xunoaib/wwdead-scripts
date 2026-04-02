@@ -14919,7 +14919,6 @@ function updateGlobals() {
     }
 
     // calculate minimap properties
-    const [viewCenterX, viewCenterY] = miniMapCenter();
     const px = playerGX ?? chars[currentId].gx;
     const py = playerGY ?? chars[currentId].gy;
 
