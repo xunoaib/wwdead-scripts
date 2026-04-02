@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WWDead Tactical Map
 // @namespace    wwd-mini-map-malton
-// @version      3.2.1
+// @version      3.2.2
 // @description  Tactical Map improvements: localStorage storage, dynamic map sizing, alt indicators, and bug fixes
 // @author       DTTL
 // @description  Displays city and suburb map in WWDead
@@ -14230,12 +14230,13 @@ function saveCurrentCharacterPosition() {
   console.log("✅ Saved:", name, `(${playerGX}, ${playerGY})`);
 }
 
-function highlightAltSuburbs() {
+function drawAltMarkers() {
   // clear existing alt highlights
   for (let y = 0; y < 10; y++) {
     for (let x = 0; x < 10; x++) {
       const cell = cityMap.cells[y][x];
       cell.classList.remove('map-alt-highlight');
+      cell.title = "";
     }
   }
 
@@ -14250,6 +14251,7 @@ function highlightAltSuburbs() {
     if (!altCell) continue;
 
     altCell.classList.add('map-alt-highlight')
+    altCell.title = posAlt.name || "Alt";
   }
 }
   // ------------------------------------------------
@@ -14745,7 +14747,7 @@ function setupCityInteractions() {
     }
 
     drawPlayerDots();
-    highlightAltSuburbs();
+    drawAltMarkers();
   }
 
   // ------------------------------------------------
@@ -14868,7 +14870,7 @@ function updateGlobals() {
     }
 
     drawSuburbMap(viewX, viewY);
-    highlightAltSuburbs();
+    drawAltMarkers();
 
     // set initial GPS coordinates in suburb map heading
     if (currentViewSuburb === playerSuburb) {
@@ -14890,6 +14892,7 @@ function updateGlobals() {
   // ------------------------------------------------
 
   function drawPlayerDots() {
+
     const chars = getStoredCharacters();
     const currentId = getCharacterId();
 
@@ -14910,6 +14913,7 @@ function updateGlobals() {
 
       if (currentViewSuburb === charSuburbName) {
         const cell = suburbMap.cells[pos.gy % 10]?.[pos.gx % 10];
+        cell.title = chars[id].name;
         cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
         cell.classList.add('map-player-dot')
       }
@@ -14920,42 +14924,9 @@ function updateGlobals() {
 
       if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
         const cell = miniMap.cells[ly]?.[lx];
+        cell.title = chars[id].name;
         cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
         cell.classList.add('map-player-dot')
-      }
-    }
-
-    // add player names to city map
-    for (const obj of Object.values(playerMapSuburb)) {
-      const [sx, sy] = [Math.floor(obj.gx / 10), Math.floor(obj.gy / 10)];
-      const cell = cityMap.cells[sy][sx];
-      cell.title = obj.names.toSorted().join(', ');
-    }
-
-    // add player names to maps
-    for (const obj of Object.values(playerMapGlobal)) {
-      const [sx, sy] = [Math.floor(obj.gx / 10), Math.floor(obj.gy / 10)];
-      const charSuburbName = suburbNames[sy][sx];
-
-      // add player names to suburb map
-      if (currentViewSuburb === charSuburbName) {
-        const cell = suburbMap.cells[obj.gy % 10][obj.gx % 10];
-        // janky hack to avoid adding names twice
-        if (!cell.title.includes('(')) {
-          cell.title = cell.title + ' (' + obj.names.toSorted().join(', ') + ')';
-        }
-      }
-
-      // add player names to mini map
-      const lx = (obj.gx - viewCenterX) + localOffset;
-      const ly = (obj.gy - viewCenterY) + localOffset;
-
-      if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
-        const cell = miniMap.cells[ly][lx];
-        // janky hack to avoid adding names twice
-        if (!cell.title.includes('(')) {
-          cell.title = cell.title + ' (' + obj.names.toSorted().join(', ') + ')';
-        }
       }
     }
 
