@@ -14230,13 +14230,12 @@ function saveCurrentCharacterPosition() {
   console.log("✅ Saved:", name, `(${playerGX}, ${playerGY})`);
 }
 
-function drawAltMarkers() {
+function highlightAltSuburbs() {
   // clear existing alt highlights
   for (let y = 0; y < 10; y++) {
     for (let x = 0; x < 10; x++) {
       const cell = cityMap.cells[y][x];
       cell.classList.remove('map-alt-highlight');
-      cell.title = "";
     }
   }
 
@@ -14251,7 +14250,6 @@ function drawAltMarkers() {
     if (!altCell) continue;
 
     altCell.classList.add('map-alt-highlight')
-    altCell.title = posAlt.name || "Alt";
   }
 }
   // ------------------------------------------------
@@ -14747,7 +14745,7 @@ function setupCityInteractions() {
     }
 
     drawPlayerDots();
-    drawAltMarkers();
+    highlightAltSuburbs();
   }
 
   // ------------------------------------------------
@@ -14870,15 +14868,15 @@ function updateGlobals() {
     }
 
     drawSuburbMap(viewX, viewY);
-    drawAltMarkers();
+    highlightAltSuburbs();
 
     // set initial GPS coordinates in suburb map heading
     if (currentViewSuburb === playerSuburb) {
       suburbMap.coords.textContent = `GPS: (${playerGX}, ${playerGY})`;
     }
 
-    drawPlayerDots();
     drawMiniMap();
+    drawPlayerDots();
   }
 
 
@@ -14887,10 +14885,34 @@ function updateGlobals() {
   // ------------------------------------------------
 
   function drawPlayerDots() {
-
     const chars = getStoredCharacters();
     const currentId = getCharacterId();
 
+    // group players by (1) suburb, and also (2) exact tile
+    const playerMapSuburb = {};  // [sx, sy] => names
+    const playerMapGlobal = {};  // [gx, gy] => names
+
+    for (const id in chars) {
+      const pos = chars[id];
+      if (pos.gx === undefined || pos.gy === undefined) continue;
+
+      // group players by suburb
+      const [sx, sy] = [Math.floor(pos.gx / 10), Math.floor(pos.gy / 10)];
+      const skey = `${sx},${sy}`
+      if (!playerMapSuburb[skey]) {
+        playerMapSuburb[skey] = { names: [], gx: pos.gx, gy: pos.gy };
+      }
+      playerMapSuburb[skey].names.push(pos.name);
+
+      // group players by exact tile
+      const gkey = `${pos.gx},${pos.gy}`
+      if (!playerMapGlobal[gkey]) {
+        playerMapGlobal[gkey] = { names: [], gx: pos.gx, gy: pos.gy };
+      }
+      playerMapGlobal[gkey].names.push(pos.name);
+    }
+
+    // calculate minimap properties
     const [viewCenterX, viewCenterY] = miniMapCenter();
     const localSize = miniMap.cells.length;
     const localOffset = Math.floor(localSize / 2);
@@ -14905,7 +14927,6 @@ function updateGlobals() {
 
       if (currentViewSuburb === charSuburbName) {
         const cell = suburbMap.cells[pos.gy % 10]?.[pos.gx % 10];
-        cell.title = chars[id].name;
         cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
         cell.classList.add('map-player-dot')
       }
@@ -14916,9 +14937,42 @@ function updateGlobals() {
 
       if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
         const cell = miniMap.cells[ly]?.[lx];
-        cell.title = chars[id].name;
         cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
         cell.classList.add('map-player-dot')
+      }
+    }
+
+    // add player names to city map
+    for (const obj of Object.values(playerMapSuburb)) {
+      const [sx, sy] = [Math.floor(obj.gx / 10), Math.floor(obj.gy / 10)];
+      const cell = cityMap.cells[sy][sx];
+      cell.title = obj.names.toSorted().join(', ');
+    }
+
+    // add player names to maps
+    for (const obj of Object.values(playerMapGlobal)) {
+      const [sx, sy] = [Math.floor(obj.gx / 10), Math.floor(obj.gy / 10)];
+      const charSuburbName = suburbNames[sy][sx];
+
+      // add player names to suburb map
+      if (currentViewSuburb === charSuburbName) {
+        const cell = suburbMap.cells[obj.gy % 10][obj.gx % 10];
+        // janky hack to avoid adding names twice
+        if (!cell.title.includes('(')) {
+          cell.title = cell.title + ' (' + obj.names.toSorted().join(', ') + ')';
+        }
+      }
+
+      // add player names to mini map
+      const lx = (obj.gx - viewCenterX) + localOffset;
+      const ly = (obj.gy - viewCenterY) + localOffset;
+
+      if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
+        const cell = miniMap.cells[ly][lx];
+        // janky hack to avoid adding names twice
+        if (!cell.title.includes('(')) {
+          cell.title = cell.title + ' (' + obj.names.toSorted().join(', ') + ')';
+        }
       }
     }
 
