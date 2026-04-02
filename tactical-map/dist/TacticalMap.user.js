@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WWDead Tactical Map
 // @namespace    wwd-mini-map-malton
-// @version      4.1.1
+// @version      4.1.2
 // @description  Tactical Map improvements: localStorage storage, dynamic map sizing, alt indicators, and bug fixes
 // @author       DTTL
 // @description  Displays city and suburb map in WWDead
@@ -11463,44 +11463,47 @@ function updateGlobals() {
   // ------------------------------------------------
 
   function drawPlayerDots() {
+  const chars = getStoredCharacters();
+  const currentId = getCharacterId();
 
-    const chars = getStoredCharacters();
-    const currentId = getCharacterId();
+  const current = chars[currentId] || {};
 
-    const px = playerGX ?? chars[currentId].gx;
-    const py = playerGY ?? chars[currentId].gy;
+  const px = playerGX ?? current.gx;
+  const py = playerGY ?? current.gy;
 
-    const [viewCenterX, viewCenterY] = miniMapCenter(px, py);
-    const localSize = miniMap.cells.length;
-    const localOffset = Math.floor(localSize / 2);
+  const [viewCenterX, viewCenterY] = miniMapCenter(px, py);
+  const localSize = miniMap.cells.length;
+  const localOffset = Math.floor(localSize / 2);
 
-    // draw alt character dots
-    for (const id in chars) {
-      const pos = chars[id];
-      if (pos.sx === undefined || pos.sy === undefined) continue;
+  for (const id in chars) {
+    const pos = chars[id];
+    if (pos.sx === undefined || pos.sy === undefined) continue;
 
-      // draw player dot in current suburb map
-      const charSuburbName = suburbNames[pos.sy][pos.sx];
+    // Draw on suburb map
+    const charSuburbName = suburbNames[pos.sy][pos.sx];
+    if (currentViewSuburb === charSuburbName) {
+      const cell = suburbMap.cells[pos.gy % 10]?.[pos.gx % 10];
+      if (!cell) continue;
 
-      if (currentViewSuburb === charSuburbName) {
-        const cell = suburbMap.cells[pos.gy % 10]?.[pos.gx % 10];
-        cell.title = chars[id].name;
-        cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
-        cell.classList.add('map-player-dot')
-      }
-
-      // draw dot in local map, relative to view center
-      const lx = (pos.gx - viewCenterX) + localOffset;
-      const ly = (pos.gy - viewCenterY) + localOffset;
-
-      if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
-        const cell = miniMap.cells[ly]?.[lx];
-        cell.title = chars[id].name;
-        cell.textContent = (currentId === id) ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
-        cell.classList.add('map-player-dot')
-      }
+      const isCurrent = (currentId && id === currentId);
+      cell.title = chars[id].name;
+      cell.textContent = isCurrent ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
+      cell.classList.add('map-player-dot');
     }
 
+    // Draw on local map
+    const lx = (pos.gx - viewCenterX) + localOffset;
+    const ly = (pos.gy - viewCenterY) + localOffset;
+    if (lx >= 0 && lx < localSize && ly >= 0 && ly < localSize) {
+      const cell = miniMap.cells[ly]?.[lx];
+      if (!cell) continue;
+
+      const isCurrent = (currentId && id === currentId);
+      cell.title = chars[id].name;
+      cell.textContent = isCurrent ? MAIN_PLAYER_SYM : ALT_PLAYER_SYM;
+      cell.classList.add('map-player-dot');
+    }
+  }
     // set initial GPS coordinates
     suburbMap.coords.textContent = `GPS: (${px}, ${py})`;
   }
