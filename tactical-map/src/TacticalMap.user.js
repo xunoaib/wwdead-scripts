@@ -15069,6 +15069,13 @@
     return [centerX, centerY];
   }
 
+  function createTileSymbol(symbol) {
+    const container = document.createElement('div');
+    container.classList.add('tile-symbol');
+    container.textContent = symbol;
+    return container;
+  }
+
   // ------------------------------------------------
   // DRAW MINIMAP AROUND PLAYER
   // ------------------------------------------------
@@ -15100,7 +15107,7 @@
             td.style.background = type.color;
             if (type.border) td.style.border = type.border;
             if (type.icon) {
-              td.textContent = type.icon;
+              td.replaceChildren(createTileSymbol(type.icon));
             }
           }
 
@@ -15338,7 +15345,7 @@
             td.style.background = type.color;
             if (type.border) td.style.border = type.border;
             if (type.icon) {
-              td.textContent = type.icon;
+              td.replaceChildren(createTileSymbol(type.icon));
             }
           }
 
@@ -15601,6 +15608,20 @@
 
       .map-current-player-suburb {
         border: 2px solid #000 !important;
+      }
+
+      .tile-symbol {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        line-height: 1;
+        font-size: 14px;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: default;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
       }
     `;
     document.head.appendChild(style);
