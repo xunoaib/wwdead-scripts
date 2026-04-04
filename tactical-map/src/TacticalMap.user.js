@@ -15069,8 +15069,11 @@
     return [centerX, centerY];
   }
 
-  function formatTileSymbol(symbol) {
-    return `<div class="tile-symbol">${symbol}</div>`;
+  function createTileSymbol(symbol) {
+    const container = document.createElement('div');
+    container.classList.add('tile-symbol');
+    container.textContent = symbol;
+    return container;
   }
 
   // ------------------------------------------------
@@ -15104,7 +15107,7 @@
             td.style.background = type.color;
             if (type.border) td.style.border = type.border;
             if (type.icon) {
-              td.innerHTML = formatTileSymbol(type.icon);
+              td.replaceChildren(createTileSymbol(type.icon));
             }
           }
 
@@ -15341,7 +15344,7 @@
             td.style.background = type.color;
             if (type.border) td.style.border = type.border;
             if (type.icon) {
-              td.innerHTML = formatTileSymbol(type.icon);
+              td.replaceChildren(createTileSymbol(type.icon));
             }
           }
 
