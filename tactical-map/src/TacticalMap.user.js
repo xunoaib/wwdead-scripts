@@ -46,6 +46,7 @@
       localStorage.removeItem("tacticalmap:chars_v2");
       localStorage.removeItem("tacticalmap:settings");
       localStorage.removeItem("LOCAL_MAP_RADIUS");
+      localStorage.removeItem(COLLAPSED_KEY);
       localStorage.setItem(MEM_VERSION_KEY, CURRENT_MEM_VERSION);
     }
   }
