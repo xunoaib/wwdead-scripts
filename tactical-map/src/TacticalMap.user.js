@@ -14911,13 +14911,15 @@
       cb.type = "checkbox";
       cb.style.margin = "0";
 
-      let isVisible = await GM.getValue(`map_visible_${key}`, true);
+      const MAP_VISIBLE_KEY = `tacticalmap:map_visible:${key}`;
+
+      let isVisible = (localStorage.getItem(MAP_VISIBLE_KEY) || "true") === "true";
       cb.checked = isVisible;
       getMap().wrap.style.display = isVisible ? "flex" : "none";
 
       cb.onchange = async () => {
         getMap().wrap.style.display = cb.checked ? "flex" : "none";
-        await GM.setValue(`map_visible_${key}`, cb.checked);
+        localStorage.setItem(MAP_VISIBLE_KEY, cb.checked);
       };
 
       label.appendChild(cb);
