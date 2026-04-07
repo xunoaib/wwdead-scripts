@@ -14853,7 +14853,7 @@
     topBar.appendChild(mainToggleBtn);
     container.appendChild(topBar);
 
-    async function setCollapsed(value) {
+    function setCollapsed(value) {
       collapsed = value;
       container.style.display = "flex";
       mapHolder.style.display = collapsed ? "none" : "flex";
@@ -14862,7 +14862,7 @@
       localStorage.setItem(COLLAPSED_KEY, collapsed);
     }
 
-    mainToggleBtn.onclick = async () => await setCollapsed(!collapsed);
+    mainToggleBtn.onclick = () => setCollapsed(!collapsed);
 
     const mapHolder = document.createElement("div");
     mapHolder.style.cssText = "display:flex;gap:10px;align-items:flex-start";
@@ -14980,7 +14980,7 @@
     mapHolder.appendChild(suburbMap.wrap);
     mapHolder.appendChild(miniMap.wrap);
 
-    await setCollapsed(localStorage.getItem(COLLAPSED_KEY) === "true");
+    setCollapsed(localStorage.getItem(COLLAPSED_KEY) === "true");
   }
 
   // ------------------------------------------------
