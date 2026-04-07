@@ -46,7 +46,6 @@
       console.log(`Memory reset triggered: stored=${storedVersion}, current=${CURRENT_MEM_VERSION}`);
       // clear all tacticalmap storage
       localStorage.removeItem(CHARACTERS_KEY);
-      localStorage.removeItem("tacticalmap:settings");
       localStorage.removeItem(LOCAL_MAP_RADIUS_KEY);
       localStorage.removeItem(COLLAPSED_KEY);
       localStorage.setItem(MEM_VERSION_KEY, CURRENT_MEM_VERSION);
