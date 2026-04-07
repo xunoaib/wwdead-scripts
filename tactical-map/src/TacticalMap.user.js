@@ -14870,9 +14870,9 @@
     document.body.appendChild(container);
 
     // create maps
-    cityMap = await makeMap("City Map", 10, "city");
-    suburbMap = await makeMap("Suburb Map", 10, "suburb");
-    miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
+    cityMap = makeMap("City Map", 10, "city");
+    suburbMap = makeMap("Suburb Map", 10, "suburb");
+    miniMap = makeMap("Local", LOCAL_MAP_SIZE, "local");
 
     // override initial labels
     miniMap.label.textContent = `Local (${playerSuburb})`;
@@ -14922,7 +14922,7 @@
       "width:32px; background:#223322; color:#BBCCBB; border:1px solid #445544; font-size:10px; margin-left:2px; height: 14px; padding: 0 2px;";
     radiusInput.title = "Local Map Radius (size = 2R + 1)";
 
-    radiusInput.onchange = async () => {
+    radiusInput.onchange = () => {
       let newRadius = parseInt(radiusInput.value);
       if (isNaN(newRadius)) return;
       if (newRadius < 1) newRadius = 1;
@@ -14936,7 +14936,7 @@
         // recreate minimap
         const oldWrap = miniMap.wrap;
         const currentDisplay = oldWrap.style.display;
-        miniMap = await makeMap("Local", LOCAL_MAP_SIZE, "local");
+        miniMap = makeMap("Local", LOCAL_MAP_SIZE, "local");
         miniMap.wrap.style.display = currentDisplay;
         oldWrap.parentNode.replaceChild(miniMap.wrap, oldWrap);
 
@@ -14987,7 +14987,7 @@
   // MAP BUILDER
   // ------------------------------------------------
 
-  async function makeMap(title, size = 10, key) {
+  function makeMap(title, size = 10, key) {
     const wrap = document.createElement("div");
     wrap.style.width = size * 22 + "px";
     wrap.style.display = "flex";
