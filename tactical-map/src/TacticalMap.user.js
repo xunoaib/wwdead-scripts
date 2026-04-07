@@ -36,6 +36,7 @@
   // ------------------------------------------------
   const CURRENT_MEM_VERSION = 2; // bump to wipe stored data
   const MEM_VERSION_KEY = "tacticalmap:memResetVersion";
+  const COLLAPSED_KEY = "tacticalmap:collapsed";
 
   function checkMemoryVersion() {
     const storedVersion = parseInt(localStorage.getItem(MEM_VERSION_KEY) || "0", 10);
@@ -14882,7 +14883,7 @@
       mapHolder.style.display = collapsed ? "none" : "flex";
       controls.style.display = collapsed ? "none" : "flex"; // Hide checkboxes when main is collapsed
       mainToggleBtn.textContent = collapsed ? "[+]" : "[-]";
-      await GM.setValue("collapsed", collapsed);
+      localStorage.setItem(COLLAPSED_KEY, collapsed);
     }
 
     mainToggleBtn.onclick = async () => await setCollapsed(!collapsed);
@@ -15001,7 +15002,7 @@
     mapHolder.appendChild(suburbMap.wrap);
     mapHolder.appendChild(miniMap.wrap);
 
-    await setCollapsed((await GM.getValue("collapsed")) ?? false);
+    await setCollapsed(localStorage.getItem(COLLAPSED_KEY) === "true");
   }
 
   // ------------------------------------------------
